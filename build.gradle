@@ -1,35 +1,51 @@
 plugins {
-    id "groovy" 
-    id "org.grails.grails-web" 
-    id "org.grails.grails-gsp" 
-    id "com.github.erdi.webdriver-binaries" version "3.0"
-    id "war" 
-    id "idea" 
-    id "com.bertramlabs.asset-pipeline" 
-    id "application" 
-    id "eclipse" 
+    id "groovy"
+    id "org.grails.grails-gsp"
+    id "org.grails.grails-web"
+    id "com.github.erdi.webdriver-binaries" version "2.7"
+    id "war"
+    id "idea"
+    id "application"
+    id "eclipse"
+    id "io.spring.dependency-management"
+    id "org.springframework.boot"
 }
 
-version "0.1"
-group = "pl.xpu"
+dependencyManagement {
+    imports {
+        mavenBom "com.amazonaws:aws-java-sdk-bom:${awsSdkBom}"
+        mavenBom "org.grails:grails-bom:${grailsGradlePluginVersion}"
+        mavenBom "org.springframework:spring-framework-bom:${springFramework}"
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBoot}"
+    }
+    applyMavenExclusions false
+}
+
+version APP_VERSION
+group "grails"
+
+application {
+    mainClass = "pl.xpu.Application"
+}
+
+springBoot {
+    mainClass = "pl.xpu.Application"
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+}
+
 
 repositories {
+    mavenLocal()
     mavenCentral()
-    maven { url "https://repo.grails.org/grails/core/" }
-}
-
-configurations {
-    all {
-        resolutionStrategy.force 'org.codehaus.groovy:groovy-xml:3.0.13'
-        resolutionStrategy.eachDependency { DependencyResolveDetails details->
-            if (details.requested.group == 'org.seleniumhq.selenium') {
-                details.useVersion('4.10.0')
-            }
-        }
-    }
+    maven { url "https://repo.grails.org/grails/core" }
+    maven { url "https://repo.grails.org/grails/plugins/" }
 }
 
 dependencies {
+
     implementation("org.grails:grails-core")
     implementation("org.grails:grails-logging")
     implementation("org.grails:grails-plugin-databinding")
@@ -41,61 +57,284 @@ dependencies {
     implementation("org.grails:grails-web-boot")
     implementation("org.grails.plugins:gsp")
     implementation("org.grails.plugins:hibernate5")
-    implementation("org.grails.plugins:scaffolding")
     implementation("org.hibernate:hibernate-core:5.6.15.Final")
     implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-logging")
-    implementation("org.springframework.boot:spring-boot-starter-tomcat")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("io.micronaut:micronaut-inject-groovy")
     console("org.grails:grails-console")
-    runtimeOnly("com.bertramlabs.plugins:asset-pipeline-grails:4.3.0")
-    runtimeOnly("com.h2database:h2")
     runtimeOnly("javax.xml.bind:jaxb-api:2.3.1")
     runtimeOnly("org.apache.tomcat:tomcat-jdbc")
-    runtimeOnly("org.fusesource.jansi:jansi:1.18")
     runtimeOnly("org.glassfish.web:el-impl:2.2.1-b05")
     testImplementation("io.micronaut:micronaut-inject-groovy")
     testImplementation("org.grails:grails-gorm-testing-support")
     testImplementation("org.grails:grails-web-testing-support")
     testImplementation("org.grails.plugins:geb")
-    testImplementation("org.seleniumhq.selenium:selenium-api:4.10.0")
-    testImplementation("org.seleniumhq.selenium:selenium-remote-driver:4.10.0")
-    testImplementation("org.seleniumhq.selenium:selenium-support:4.10.0")
+    testImplementation("org.mockito:mockito-core")
+    testImplementation("org.seleniumhq.selenium:selenium-api:4.8.1")
+    testImplementation("org.seleniumhq.selenium:selenium-remote-driver:4.8.1")
+    testImplementation("org.seleniumhq.selenium:selenium-support:4.8.1")
     testImplementation("org.spockframework:spock-core")
-    testRuntimeOnly("org.seleniumhq.selenium:selenium-chrome-driver:4.10.0")
-    testRuntimeOnly("org.seleniumhq.selenium:selenium-firefox-driver:4.10.0")
-    testRuntimeOnly("org.seleniumhq.selenium:selenium-safari-driver:4.10.0")
+    testRuntimeOnly("org.seleniumhq.selenium:selenium-chrome-driver:4.8.1")
+    testRuntimeOnly("org.seleniumhq.selenium:selenium-firefox-driver:4.8.1")
     testImplementation("io.micronaut:micronaut-http-client")
 
+
+
+
+
+    implementation "org.springframework.boot:spring-boot-starter-tomcat"
+    implementation "org.springframework.boot:spring-boot-actuator-autoconfigure"
+
+    implementation "org.grails.plugins:async"
+    implementation "org.grails.plugins:events"
+    implementation "org.grails.plugins:scaffolding"
+    implementation "org.grails.plugins:spring-security-core:${springSecurity}"
+    profile "org.grails.profiles:web"
+
+    implementation "org.hibernate:hibernate-ehcache"
+
+
+    implementation "javax.mail:com.springsource.javax.mail:${javaxMail}"
+
+    // this does not seem to be used, so I'm removing it for security reasons (log4j vulnerability)
+    // https://mvnrepository.com/artifact/log4j/log4j
+    // implementation group: "log4j", name: "log4j", version: "1.2.17"
+
+    implementation "org.imgscalr:imgscalr-lib:${imageScalr}"
+    implementation "net.sf.opencsv:opencsv:${openCsv}"
+    implementation "org.xhtmlrenderer:flying-saucer-pdf:${xhtmlRender}"
+    implementation "org.xhtmlrenderer:flying-saucer-core:${xhtmlRender}"
+    implementation "net.imagej:ij:${imageJ}"
+    // implementation "com.lowagie:itext:2.1.7"
+    implementation "com.itextpdf:itextpdf:${itextPdf}"
+    implementation "joda-time:joda-time:${jodaTime}"
+
+
+    // try new approach
+    implementation "com.amazonaws:aws-java-sdk-s3"
+    implementation "com.amazonaws:aws-java-sdk-ses"
+
+    implementation "org.apache.httpcomponents:httpclient:${httpComp}"
+
+    implementation "com.google.code.gson:gson:${gson}"
+
+    implementation "org.jasypt:jasypt:${jasypt}"
+
+    implementation "org.apache.commons:commons-collections4:${commonsCollections}"
+    implementation "commons-codec:commons-codec:${commonsCodec}"
+    implementation "commons-io:commons-io:${commonsIo}"
+
+
+    // try javabrake build done with java 8
+    implementation "io.airbrake:javabrake:${javaBrake}"
+
+    // here's a project with some fancier airbrake code for logback:
+    // https://github.com/anthavio/airbrake-logback
+
+    // Cache
+    implementation "org.grails.plugins:cache"
+    // trying ehcache plugin
+    implementation "org.grails.plugins:cache-ehcache:${grailsPluginsEhCache}"
+
+    // Database migration
+    implementation "org.grails.plugins:database-migration:${grailsPluginsMigration}"
+    implementation "org.liquibase:liquibase-core:${liquibase}"
+
+    // Quartz
+    implementation "org.grails.plugins:quartz:${grailsPluginsQuartz}"
+    implementation "org.quartz-scheduler:quartz:${quartzSched}"
+
+    // for some reason, this archive will not download via Maven, so it's included explicitly as a .jar
+    // implementation group: "org.apache.commons", name: "commons-imaging", version: "1.0"
+    implementation files("lib/commons-imaging-1.0.jar")
+    implementation files("lib/chargebee-java-2.12.0.jar")
+
+    implementation "junit:junit:${junit}"
+
+    // JWT tokens
+    implementation "io.jsonwebtoken:jjwt-api:${jjwt}"
+    implementation "io.jsonwebtoken:jjwt-impl:${jjwt}"
+    implementation "io.jsonwebtoken:jjwt-jackson:${jjwt}"
+
+    runtimeOnly "mysql:mysql-connector-java:${mysql}"
+
+    runtimeOnly files("lib/commons-imaging-1.0.jar")
+    runtimeOnly files("lib/chargebee-java-2.12.0.jar")
+    testImplementation files("src/test/groovy")
+
+    testImplementation "org.grails:grails-test-mixins:${grailsTestMixins}"
+    testImplementation "junit:junit:${junit}"
+
+    implementation "org.codehaus.groovy:groovy-all:${groovy}"
+
+    implementation "org.apache.logging.log4j:log4j-core:${log4j}"
+    implementation "org.apache.logging.log4j:log4j-api:${log4j}"
+    implementation "org.slf4j:jul-to-slf4j:${slf4j}"
+    implementation "org.slf4j:slf4j-log4j12:${slf4j}"
+    implementation "org.slf4j:log4j-over-slf4j:${slf4j}"
+
+    implementation "org.codehaus.groovy:groovy-dateutil:3.0.19"
+
 }
 
-application {
-    mainClass.set("pl.xpu.Application")
+configurations.all {
+    if (gradle.gradleVersion != gradleVersion) {
+        throw GradleException("****** wrong gradle version. USE GRADLEW!!! ******")
+    }
+
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == "ch.qos.logback") {
+            details.useVersion "1.2.7"
+        }
+        // org.grails.plugins:cache is out-of-date
+        if (details.requested.group == "com.bertramlabs.plugins" && details.requested.name == "asset-pipeline-grails") {
+            details.useVersion "3.4.7"
+        }
+        // grails is behind
+        if (details.requested.group == "org.springframework.boot" && details.requested.name == "spring-boot-autoconfigure") {
+            details.useVersion "2.7.12"
+        }
+        // spring-boot-autoconfigure is behind
+        if (details.requested.group == "org.yaml" && details.requested.name == "snakeyaml") {
+            details.useVersion "2.0"
+        }
+        // org.quartz-scheduler is behind
+        if (details.requested.group == "org.quartz-scheduler" && details.requested.name == "quartz") {
+            details.useVersion "2.3.2"
+        }
+        // found this on the web
+        // (5) Micronaut required
+        if (details.requested.group == 'jakarta.annotation' && details.requested.name == 'jakarta.annotation-api') {
+            details.useVersion '2.0.0'
+        }
+
+    }
 }
 
-java {
-    sourceCompatibility = JavaVersion.toVersion("11")
+
+sourceSets {
+    main {
+        resources {
+            srcDir "grails-app/migrations"
+        }
+
+        /* This is here to support the "publish" task below,
+           which needs the scripts directory to be on the classpath.
+           If we decide to move publishing elsewhere, get rid of this.
+         */
+        groovy {
+            srcDir "src/main/scripts"
+        }
+    }
 }
 
-tasks.withType(Test) {
-    useJUnitPlatform()
-    systemProperty "geb.env", System.getProperty('geb.env')
-    systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")
-    systemProperty 'webdriver.chrome.driver', "${System.getenv('CHROMEWEBDRIVER')}/chromedriver"
-    systemProperty 'webdriver.gecko.driver', "${System.getenv('GECKOWEBDRIVER')}/geckodriver"
+
+tasks.named("bootRun") {
+    jvmArgs("-Dspring.output.ansi.enabled=always")
+    sourceResources sourceSets.main
+    String springProfilesActive = "spring.profiles.active"
+    systemProperty springProfilesActive, System.getProperty(springProfilesActive)
 }
-tasks.withType(War).configureEach { War war ->
-    war.dependsOn compileGroovyPages
+
+// dan testing
+tasks.named("war") {
+    archiveName "fn3.war"
 }
-webdriverBinaries {
-    chromedriver '110.0.5481.77'
-    geckodriver '0.32.2'
-    edgedriver '110.0.1587.57'
+
+tasks.register("publish", JavaExec) {
+    dependsOn "classes"
+    main = "PublishWar"
+    classpath = sourceSets.main.runtimeClasspath
+    if (project.hasProperty("env")) {
+        // Pass command-line argument to script.
+        args project.getProperty("env")
+    }
 }
+
+tasks.register("changeVersion", JavaExec) {
+    dependsOn "classes"
+    main = "ChangeVersion"
+    classpath = sourceSets.main.runtimeClasspath
+    if (project.hasProperty("type")) {
+        // Pass command-line argument to script.
+        args project.getProperty("type")
+    }
+}
+
+
+tasks.register("copyWar", JavaExec) {
+    dependsOn "classes"
+    main = "S3PublishOrCopy"
+    classpath = sourceSets.main.runtimeClasspath
+    if (project.hasProperty("src_path")) {
+        args "COPY", project.getProperty("src_bucket"), project.getProperty("src_path"), project.getProperty("dest_bucket"), project.getProperty("dest_path")
+    }
+}
+
+tasks.register("pushWar", JavaExec) {
+    dependsOn "classes"
+    main = "S3PublishOrCopy"
+    classpath = sourceSets.main.runtimeClasspath
+    if (project.hasProperty("local")) {
+        args "PUBLISH", project.getProperty("local"), project.getProperty("dest_bucket"), project.getProperty("dest_path")
+    }
+}
+
+
+/*
 assets {
     minifyJs = true
     minifyCss = true
 }
+*/
+
+/**
+ * Add properties to the grails.build.info property file that is generated by the build and included in the .war file
+ *
+ * This code is from http://grailsblog.objectcomputing.com/posts/2017/04/02/add-build-info-to-your-project.html
+ *
+ * From the above web page:
+ *
+ * Since the early days of Grails, we were able to add arbitrary properties to the application.properties file. Grails
+ * provides this information through the grails.util.Metadata class, and for views this is easily made available through
+ * the <g:meta> tag.
+ *
+ * Since Grails 3 is built with Gradle, the old application.properties is no longer in use, instead we’ll add properties
+ * to grails.build.info
+ *
+ * The code below adds an application.name and an application.version property. The version here is just a placeholder.
+ *
+ * To build the war file from Intellij from the build menu build->Make Grails Web Archive. This will build the Grails
+ * deployment war and include the grails.build.info file in WEB-INF/classes/META-INF/grails.build.info
+ *
+ */
+
+buildProperties.doLast {
+    // Find the right file
+    File grailsBuildInfoFile = it.outputs.files.files.find { it.name == "grails.build.info" }
+    if (!grailsBuildInfoFile) return // No need to continue if the file is not there
+    Properties properties = new Properties()
+    // Read properties from the file
+    grailsBuildInfoFile.withInputStream {
+        properties.load(it)
+    }
+
+    // Write properties from gradle.properties to the grails.build.info file created at build time
+    properties.setProperty("app.name", APP_NAME)
+    String appVersion = APP_VERSION
+    properties.setProperty("app.version", appVersion)
+    // Write the properties back to the file
+    grailsBuildInfoFile.withOutputStream {
+        properties.store(it, null)
+    }
+}
+
+def isNonStable = { String version ->
+    def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
